@@ -1,0 +1,34 @@
+# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,cuda
+# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,cuda
+
+### CUDA ###
+src/*.i
+src/*.ii
+src/*.gpu
+src/*.ptx
+src/*.cubin
+src/*.fatbin
+
+### VisualStudioCode ###
+src/.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# Local History for Visual Studio Code
+src/.history/
+
+# Built Visual Studio Code Extensions
+src/*.vsix
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+src/.history
+src/.ionide
+
+### Compiled files and executables ###
+src/*.out            
+
+# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,cuda
