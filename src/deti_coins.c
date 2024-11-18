@@ -128,6 +128,7 @@ static void alarm_signal_handler(int dummy)
 }
 
 #include "deti_coins_cpu_search.h"
+#include "deti_coins_avx_search.h"
 //#include "deti_coins_cpu_special_search.h"
 
 //#include "search_utilities.h"
@@ -197,19 +198,19 @@ int main(int argc,char **argv)
         fflush(stdout);
         deti_coins_cpu_search();
         break;
-#ifdef DETI_COINS_CPU_AVX_SEARCH
-      case '1':
-        printf("searching for %u seconds using deti_coins_cpu_avx_search()\n",seconds);
-        fflush(stdout);
-        deti_coins_cpu_avx_search(n_random_words);
-        break;
+#ifdef DETI_COINS_AVX_SEARCH
+  case '1':
+    printf("searching for %u seconds using deti_coins_avx_search()\n",seconds);
+    fflush(stdout);
+    deti_coins_avx_search();
+    break;
 #endif
 #ifdef DETI_COINS_CPU_AVX2_SEARCH
-      case '2':
-        printf("searching for %u seconds using deti_coins_cpu_avx2_search()\n",seconds);
-        fflush(stdout);
-        deti_coins_cpu_avx2_search(n_random_words);
-        break;
+  case '2':
+    printf("searching for %u seconds using deti_coins_cpu_avx2_search()\n",seconds);
+    fflush(stdout);
+    deti_coins_cpu_avx2_search(n_random_words);
+    break;
 #endif
 #ifdef DETI_COINS_CPU_NEON_SEARCH
       case '3':
