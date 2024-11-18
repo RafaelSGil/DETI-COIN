@@ -65,7 +65,7 @@ typedef unsigned long u64_t;
 #include "md5_test_data.h"
 #include "md5_cpu.h"
 #include "md5_cpu_avx.h"
-//#include "md5_cpu_avx2.h"
+#include "md5_cpu_avx2.h"
 #include "md5_cpu_neon.h"
 #if USE_CUDA > 0
 # include "cuda_driver_api_utilities.h"
@@ -128,15 +128,14 @@ static void alarm_signal_handler(int dummy)
 }
 
 #include "deti_coins_cpu_search.h"
-#include "deti_coins_avx_search.h"
 //#include "deti_coins_cpu_special_search.h"
 
 //#include "search_utilities.h"
 //#ifdef MD5_CPU_AVX
-//# include "deti_coins_cpu_avx_search.h"
+#include "deti_coins_avx_search.h"
 //#endif
 //#ifdef MD5_CPU_AVX2
-//# include "deti_coins_cpu_avx2_search.h"
+#include "deti_coins_avx2_search.h"
 //#endif
 //#ifdef MD5_CPU_NEON
 //# include "deti_coins_cpu_neon_search.h"
@@ -205,11 +204,11 @@ int main(int argc,char **argv)
     deti_coins_avx_search();
     break;
 #endif
-#ifdef DETI_COINS_CPU_AVX2_SEARCH
+#ifdef DETI_COINS_AVX2_SEARCH
   case '2':
     printf("searching for %u seconds using deti_coins_cpu_avx2_search()\n",seconds);
     fflush(stdout);
-    deti_coins_cpu_avx2_search(n_random_words);
+    deti_coins_avx2_search();
     break;
 #endif
 #ifdef DETI_COINS_CPU_NEON_SEARCH
@@ -238,10 +237,10 @@ int main(int argc,char **argv)
   }
   fprintf(stderr,"usage: %s -t                               # MD5 hash tests\n",argv[0]);
   fprintf(stderr,"       %s -s0 [seconds] [ignored]          # search for DETI coins using md5_cpu()\n",argv[0]);
-#ifdef DETI_COINS_CPU_AVX_SEARCH
+#ifdef DETI_COINS_AVX_SEARCH
   fprintf(stderr,"       %s -s1 [seconds] [n_random_words]   # search for DETI coins using md5_cpu_avx()\n",argv[0]);
 #endif
-#ifdef DETI_COINS_CPU_AVX2_SEARCH
+#ifdef DETI_COINS_AVX2_SEARCH
   fprintf(stderr,"       %s -s2 [seconds] [n_random_words]   # search for DETI coins using md5_cpu_avx2()\n",argv[0]);
 #endif
 #ifdef DETI_COINS_CPU_NEON_SEARCH
