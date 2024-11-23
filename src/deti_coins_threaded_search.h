@@ -26,17 +26,17 @@ static void *deti_coins_worker(void *args) {
     u32_t interleaved_coins[13 * N_LANES_AVX2_THREAD] __attribute__((aligned(16)));
     u32_t interleaved_hashes[4 * N_LANES_AVX2_THREAD] __attribute__((aligned(16))); 
 
-    for (lane = 0; lane < N_LANES_AVX2; lane++) {
+    for (lane = 0; lane < N_LANES_AVX2_THREAD; lane++) {
         for (idx = 5; idx < 12; idx++) {
-            interleaved_coins[idx * N_LANES_AVX2 + lane] = 0x20202020;
+            interleaved_coins[idx * N_LANES_AVX2_THREAD + lane] = 0x20202020;
         }
 
-        interleaved_coins[12 * N_LANES_AVX2 + lane] = 0x0a202020;
+        interleaved_coins[12 * N_LANES_AVX2_THREAD + lane] = 0x0a202020;
     }
 
-    for (lane = 0; lane < N_LANES_AVX2; lane++) {
-        interleaved_coins[0 * N_LANES_AVX2 + lane] = 0x49544544; // 'ITED'
-        interleaved_coins[1 * N_LANES_AVX2 + lane] = 0x696f6320; // 'ioc_'
+    for (lane = 0; lane < N_LANES_AVX2_THREAD; lane++) {
+        interleaved_coins[0 * N_LANES_AVX2_THREAD + lane] = 0x49544544; // 'ITED'
+        interleaved_coins[1 * N_LANES_AVX2_THREAD + lane] = 0x696f6320; // 'ioc_'
     }
 
     for (lane = 0; lane < N_LANES_AVX2_THREAD; lane++) {
