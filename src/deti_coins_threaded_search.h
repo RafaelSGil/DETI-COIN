@@ -5,15 +5,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>  // For sysconf
+#include <unistd.h>
 #include <math.h>
 
-#define N_LANES_AVX2 8
+#define N_LANES_AVX2_THREAD 8
 
-typedef uint32_t u32_t;
-typedef uint64_t u64_t;
-
-pthread_mutex_t coin_mutex = PTHREAD_MUTEX_INITIALIZER;
+//pthread_mutex_t coin_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 typedef struct {
     int thread_id;
@@ -25,15 +22,28 @@ static void *deti_coins_worker(void *args) {
     thread_args_t *targs = (thread_args_t *)args;
     int thread_id = targs->thread_id;
 
-    u32_t n, lane;
-    u32_t interleaved_coins[13 * N_LANES_AVX2] __attribute__((aligned(16)));
-    u32_t interleaved_hashes[4 * N_LANES_AVX2] __attribute__((aligned(16))); 
+    u32_t idx, n, lane;
+    u32_t interleaved_coins[13 * N_LANES_AVX2_THREAD] __attribute__((aligned(16)));
+    u32_t interleaved_hashes[4 * N_LANES_AVX2_THREAD] __attribute__((aligned(16))); 
 
     for (lane = 0; lane < N_LANES_AVX2; lane++) {
+        for (idx = 5; idx < 12; idx++) {
+            interleaved_coins[idx * N_LANES_AVX2 + lane] = 0x20202020;
+        }
+
+        interleaved_coins[12 * N_LANES_AVX2 + lane] = 0x0a202020;
+    }
+
+    for (lane = 0; lane < N_LANES_AVX2; lane++) {
+        interleaved_coins[0 * N_LANES_AVX2 + lane] = 0x49544544; // 'ITED'
+        interleaved_coins[1 * N_LANES_AVX2 + lane] = 0x696f6320; // 'ioc_'
+    }
+
+    for (lane = 0; lane < N_LANES_AVX2_THREAD; lane++) {
         // Y is the lane index in hexadecimal (lane & 0xF)
         // X is the thread ID in hexadecimal (thread_id & 0xF)
         // 0xYX206e -> 0x30 + lane for Y, 0x30 + thread_id for X
-        interleaved_coins[2 * N_LANES_AVX2 + lane] = 
+        interleaved_coins[2 * N_LANES_AVX2_THREAD + lane] = 
             (0x30 + (lane & 0xF)) << 24 |  // Y (lane index)
             (0x30 + (thread_id & 0xF)) << 16 |  // X (thread ID)
             0x206e;  // Fixed part ('_n')
@@ -43,18 +53,17 @@ static void *deti_coins_worker(void *args) {
     u32_t v2 = 0x20202020; // '_ _ _ _' -> 4 spaces
 
     while (!stop_request) {
-        for (int i = 0; i < N_LANES_AVX2; i++) {
-            interleaved_coins[3 * N_LANES_AVX2 + i] = v1;
-            interleaved_coins[4 * N_LANES_AVX2 + i] = v2;
+        for (int i = 0; i < N_LANES_AVX2_THREAD; i++) {
+            interleaved_coins[3 * N_LANES_AVX2_THREAD + i] = v1;
+            interleaved_coins[4 * N_LANES_AVX2_THREAD + i] = v2;
         }
 
-        // Perform AVX2 computation
         md5_cpu_avx2((v8si *)&interleaved_coins[0], (v8si *)&interleaved_hashes[0]);
 
-        for (lane = 0; lane < N_LANES_AVX2; lane++) {
+        for (lane = 0; lane < N_LANES_AVX2_THREAD; lane++) {
             u32_t hash[4];
             for (int i = 0; i < 4; i++) {
-                hash[i] = interleaved_hashes[i * N_LANES_AVX2 + lane];
+                hash[i] = interleaved_hashes[i * N_LANES_AVX2_THREAD + lane];
             }
 
             hash_byte_reverse(hash);
@@ -64,13 +73,13 @@ static void *deti_coins_worker(void *args) {
             if (n >= 32u) {
                 u32_t coin[13];
                 for (int i = 0; i < 13; i++) {
-                    coin[i] = interleaved_coins[i * N_LANES_AVX2 + lane];
+                    coin[i] = interleaved_coins[i * N_LANES_AVX2_THREAD + lane];
                 }
 
-                pthread_mutex_lock(&coin_mutex);
+                //pthread_mutex_lock(&coin_mutex);
                 save_deti_coin(coin);
                 targs->n_coins++;
-                pthread_mutex_unlock(&coin_mutex);
+                //pthread_mutex_unlock(&coin_mutex);
             }
         }
 

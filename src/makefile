@@ -24,7 +24,7 @@ CUDA_ARCH = sm_75
 #
 # Compiler flags
 #
-CFLAGS = -Wall -O2
+CFLAGS = -Wall -O2 -lpthread -lm -g
 INTEL_FLAGS = $(CFLAGS) -mavx2
 
 #
@@ -49,7 +49,7 @@ clean:
 # compile for Intel/AMD processors without CUDA
 #
 deti_coins_intel: $(SRC) $(H_FILES)
-	cc $(INTEL_FLAGS) -DUSE_CUDA=0 $(SRC) -o deti_coins_intel
+	cc $(INTEL_FLAGS) -DUSE_CUDA=0 $(SRC) -o deti_coins_intel 
 
 #
 # compilation for Apple silicon without CUDA
