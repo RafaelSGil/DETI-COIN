@@ -1,14 +1,3 @@
-//
-// Tomás Oliveira e Silva,  October 2024
-//
-// Arquiteturas de Alto Desempenho 2024/2025
-//
-// MD5 hash CPU code using AVX instructions (Intel/AMD)
-//
-// md5_cpu_avx() -------- compute the MD5 hash of a message
-// test_md5_cpu_avx() --- test the correctness of md5_cpu() and measure its execution time
-//
-
 #if defined(__GNUC__) && defined(__AVX2__)
 #ifndef MD5_CPU_AVX2
 #define MD5_CPU_AVX2

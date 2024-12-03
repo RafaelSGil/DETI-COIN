@@ -128,15 +128,14 @@ static void alarm_signal_handler(int dummy)
 }
 
 #include "deti_coins_cpu_search.h"
-//#include "deti_coins_cpu_special_search.h"
-
+#include "deti_coins_cpu_special_search.h"
 //#include "search_utilities.h"
-//#ifdef MD5_CPU_AVX
+#ifdef MD5_CPU_AVX
 #include "deti_coins_avx_search.h"
-//#endif
-//#ifdef MD5_CPU_AVX2
+#endif
+#ifdef MD5_CPU_AVX2
 #include "deti_coins_avx2_search.h"
-//#endif
+#endif
 //#ifdef MD5_CPU_NEON
 //# include "deti_coins_cpu_neon_search.h"
 //#endif
@@ -144,6 +143,7 @@ static void alarm_signal_handler(int dummy)
 //# include "deti_coins_cuda_search.h"
 //#endif
 
+#include "deti_coins_threaded_search.h"
 
 //
 // main program
@@ -225,6 +225,13 @@ int main(int argc,char **argv)
         deti_coins_cuda_search(n_random_words);
         break;
 #endif
+#ifdef DETI_COINS_THREADED_SEARCH
+      case '5':
+        printf("searching for %u seconds using deti_coins_threaded_search()\n",seconds);
+        fflush(stdout);
+        deti_coins_threaded_search();
+        break;
+#endif
 #ifdef DETI_COINS_CPU_SPECIAL_SEARCH
       case '9':
         printf("searching for %u seconds using deti_coins_cpu_special_search()\n",seconds);
@@ -248,6 +255,9 @@ int main(int argc,char **argv)
 #endif
 #ifdef DETI_COINS_CUDA_SEARCH
   fprintf(stderr,"       %s -s4 [seconds] [n_random_words]   # search for DETI coins using CUDA\n",argv[0]);
+#endif
+#ifdef DETI_COINS_THREADED_SEARCH
+  fprintf(stderr,"       %s -s5 [seconds] [n_random_words]   # search for DETI coins using POSIX Threads\n",argv[0]);
 #endif
 #ifdef DETI_COINS_CPU_SPECIAL_SEARCH
   fprintf(stderr,"       %s -s9 [seconds] [ignored]          # special search for DETI coins using md5_cpu()\n",argv[0]);
