@@ -125,4 +125,33 @@ static u32_t parse_time_duration(const char *time_duration)
     }
 }
 
+// function to increment hexadecimal interleaved_coins within the range of the hexadecimal ASCII values,
+// whenever a byte reaches 0x7F, it is reset to 0x20 and the next byte is incremented,
+// returning 1 when the most significant byte has been reset to 0x20
+int inc(u32_t* v){
+    u32_t vv = *v;
+    
+    vv++;
+    if ((vv & 0xFF) == 0x7F) {
+        vv += 0xA1;
+        
+        if ((vv & 0xFF00) == 0x7F00) {
+            vv += 0xA100;
+
+            if ((vv & 0xFF0000) == 0x7F0000) {
+                vv += 0xA10000;
+                
+                if ((vv & 0xFF000000) == 0x7F000000) {
+                    vv += 0xA1000000;
+                    *v = vv;
+                    return 1;
+                }
+            }
+        }
+    }
+    
+    *v = vv;
+    return 0;
+}
+
 #endif
