@@ -53,7 +53,7 @@ void deti_coins_cuda_search(u32_t n_random_words)
 	}
 
     
-    // STORE DETI COINS
+    // PRINT DETI COINS
 
 
     printf("deti coins cuda search: %lu DETI coin%s found in %lu attempts (expected %.2f coins)\n",
